@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { FirebaseService } from './../services/firebase.service';
 
 import { Product } from './../model/product';
 import { ProductService } from './../services/product.service';
@@ -19,6 +20,7 @@ export class Tab1Page implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     private productService: ProductService,
+    private firebaseService: FirebaseService,
     private router: Router,
     private route: ActivatedRoute
     ) {}
@@ -50,20 +52,12 @@ export class Tab1Page implements OnInit {
     });
 }
 
-  addProduct() {
-    const newProduct = this.productForm.getRawValue() as Product;
+  addProduct(values: any) {
+    let newProduct:Product = {...values};
+    this.firebaseService.save(newProduct);
+    console.log(newProduct);
+    this.productForm.reset();
 
-
-
-    this.productService.insertProduct(newProduct)
-    .subscribe({
-      next: (result:any) => {
-        this.productForm.reset();
-        console.info('[AddProduct]', result);
-        this.router.navigateByUrl('/tabs/tab2');
-      },
-      error: (error:any) => { console.log(error) }
-    });
   }
 
   loadForm() {
@@ -76,10 +70,10 @@ export class Tab1Page implements OnInit {
       fornecedor: this.product.fornecedor
     });
   }
-
   editProduct() {
     const editProduct = this.productForm.getRawValue() as Product;
     editProduct.id = this.product.id;
+
 
     this.productService.updateProduct(editProduct).subscribe({
       next: () => {
@@ -91,7 +85,10 @@ export class Tab1Page implements OnInit {
         this.productForm.reset();
       }
     });
+    this.productForm.reset();
+    this.router.navigateByUrl('/tabs/tab2');
   }
+
 
   calcVenda() {
     let valorCompra = this.productForm.get('preco_compra')?.value;

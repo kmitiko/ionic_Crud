@@ -1,9 +1,11 @@
-import { ProductService } from './../services/product.service';
 import { Product } from './../model/product';
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ModalController } from '@ionic/angular';
-import { ModalProductDetailsComponent } from '../modal-products-details/modal-product-details.component';
 
+import { FirebaseService } from '../services/firebase.service';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { ModalProductDetailsComponent } from '../modal-products-details/modal-product-details.component';
 
 
 @Component({
@@ -16,39 +18,35 @@ export class Tab2Page {
   product!: Product[];
 
   constructor(
-    private productService: ProductService,
-    private modalCtrl: ModalController ) {}
 
-  public ionViewWillEnter(): void {
-    this.listProduct();
-  }
+    private modalCtrl: ModalController,
+    private firebaseService: FirebaseService) {}
 
-  listProduct() {
-    this.productService.getProduct().subscribe({
-      next: (result) => (this.product = result),
-      error: (err) => console.error(err),
+  public ionViewWillEnter() {
+    this.firebaseService.list().subscribe({
+      next: (result) => {this.product = result},
+      error: (err) => {console.error(err)}
     });
   }
 
-  async openModal(id:number) {
+  listaProduto(){
+    this.firebaseService.list().subscribe({
+      next: (result) => this.product = result,
+      error: (err) => console.error(err),
+    })
+  }
+
+
+  async openModal(id:string) {
 
     const product = this.product.find(product => product.id === id);
-
-
+    console.log(product)
     const modal = await this.modalCtrl.create({
       component: ModalProductDetailsComponent,
       componentProps: {
         'product': product
       }
     });
-
-    modal.onWillDismiss().then(
-      event => {
-        if(event.role === 'cancel') {
-          this.listProduct();
-        }
-      }
-    );
 
     return await modal.present();
   }

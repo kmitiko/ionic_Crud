@@ -8,6 +8,7 @@ import { ModalProductDetailsModule } from '../modal-products-details/modal-produ
 import { ProductService } from './../services/product.service';
 import { Tab2PageRoutingModule } from './tab2-routing.module';
 import { Tab2Page } from './tab2.page';
+import { FirebaseService } from '../services/firebase.service';
 
 @NgModule({
   imports: [
@@ -19,6 +20,6 @@ import { Tab2Page } from './tab2.page';
     ModalProductDetailsModule
   ],
   declarations: [Tab2Page],
-  providers: [ProductService]
+  providers: [FirebaseService]
 })
 export class Tab2PageModule {}

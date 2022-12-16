@@ -32,7 +32,7 @@ export class Tab4Page {
     });
   }
 
-  async openModal(id:number) {
+  async openModal(id:string) {
 
     const fornecedor = this.fornecedor.find(fornecedor => fornecedor.id === id);
     const endereco = this.fornecedor.find(fornecedor => fornecedor.id === id);
@@ -46,13 +46,6 @@ export class Tab4Page {
       }
     });
 
-    modal.onWillDismiss().then(
-      event => {
-        if(event.role === 'cancel') {
-          this.listFornecedor();
-        }
-      }
-    );
 
     return await modal.present();
   }

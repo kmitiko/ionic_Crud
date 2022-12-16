@@ -1,27 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormControl, FormGroupDirective, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { Endereco } from '../model/endereco';
+import { FirebasefornecedorService } from '../services/firebasefornecedor.service';
 import { FornecedorService } from '../services/fornecedor.service';
 import { Fornecedor } from './../model/fornecedor';
 import { CorreiosService } from './../services/correios.service';
+
 
 @Component({
   selector: 'app-tab3',
   templateUrl: 'tab3.page.html',
   styleUrls: ['tab3.page.scss']
 })
-export class Tab3Page implements OnInit {
+export class Tab3Page {
 
   fornecedorForm!: FormGroup;
+  @ViewChild('createForm') createForm!: FormGroupDirective;
+  status!: string;
   fornecedor!:Fornecedor;
   endereco!: Endereco;
   editable:boolean = false;
 
   constructor(
     private formBuilder: FormBuilder,
-    private fornecedorService: FornecedorService,
+    private firebasefornecedorService: FirebasefornecedorService,
     private router: Router,
     private route: ActivatedRoute,
     private correiosService: CorreiosService
@@ -40,10 +44,10 @@ export class Tab3Page implements OnInit {
       });
 
       this.route.paramMap.subscribe(params => {
-        const fornecedorId = +params.get('id')!;
+        const fornecedorId = params.get('id')!;
 
         if(fornecedorId) {
-          this.fornecedorService.findFornecedor(fornecedorId).subscribe({
+          this.firebasefornecedorService.findfornecedor(fornecedorId).subscribe({
             next: (fornecedorDB: Fornecedor) => {
               this.fornecedor = fornecedorDB;
               this.editable = true;
@@ -56,20 +60,14 @@ export class Tab3Page implements OnInit {
 
   }
 
-  addFornecedor() {
-    const newFornecedor = this.fornecedorForm.getRawValue() as Fornecedor;
+  createFornecedor(values : any) {
+    const newFornecedor: Fornecedor = { ...values};
 
 
-    this.fornecedorService.insertFornecedor(newFornecedor)
-    .subscribe({
-      next: (result:any) => {
-        this.fornecedorForm.reset();
-        console.info('[AddFornecedor]', result);
-        this.router.navigateByUrl('/tabs/tab4');
-      },
-      error: (error:any) => { console.log(error) }
-    });
-  }
+    this.firebasefornecedorService.savefornecedor(newFornecedor);
+    this.createForm.reset();
+    this.router.navigateByUrl('/tabs/tab4');
+      }
 
   loadForm() {
     this.fornecedorForm.patchValue({
@@ -99,19 +97,14 @@ export class Tab3Page implements OnInit {
   }
 
 
-  editFornecedor() {
+  editFornecedor(values: any) {
     const editFornecedor = this.fornecedorForm.getRawValue() as Fornecedor;
+    let fornecedor: Fornecedor = {...values};
     editFornecedor.id = this.fornecedor.id;
 
-    this.fornecedorService.updateFornecedor(editFornecedor).subscribe({
-      next: () => {
-        this.router.navigateByUrl('/tabs/tab4');
-        this.fornecedorForm.reset();
-      },
-      error: (err) => {
-        console.error(err);
-        this.fornecedorForm.reset();
-      }
-    });
+    this.firebasefornecedorService.updatefornecedor(editFornecedor)
+    this.router.navigateByUrl('/tabs/tab4');
+    this.fornecedorForm.reset();
+
   }
 }
