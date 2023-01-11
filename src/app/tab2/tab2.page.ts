@@ -1,12 +1,11 @@
 import { Product } from './../model/product';
-import { Component } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { Component, Input } from '@angular/core';
 
 import { FirebaseService } from '../services/firebase.service';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import { ModalProductDetailsComponent } from '../modal-products-details/modal-product-details.component';
-
+import { CorreiosService } from '../services/correios.service';
+import { ProductService } from '../services/product.service';
 
 @Component({
   selector: 'app-tab2',
@@ -15,40 +14,26 @@ import { ModalProductDetailsComponent } from '../modal-products-details/modal-pr
 })
 export class Tab2Page {
 
-  product!: Product[];
+  products!: Observable<Product[]>;
+
+  @Input() product!: Product;
 
   constructor(
 
-    private modalCtrl: ModalController,
-    private firebaseService: FirebaseService) {}
+    private firebaseService: FirebaseService,
+    private router: Router,
+    private productService: ProductService,
+    private correiosService: CorreiosService, ){
+    this.products = this.firebaseService.list();
 
-  public ionViewWillEnter() {
-    this.firebaseService.list().subscribe({
-      next: (result) => {this.product = result},
-      error: (err) => {console.error(err)}
-    });
-  }
-
-  listaProduto(){
-    this.firebaseService.list().subscribe({
-      next: (result) => this.product = result,
-      error: (err) => console.error(err),
-    })
-  }
+    }
+newProduct() {
+  this.router.navigateByUrl('/tabs/tab1')
+}
 
 
-  async openModal(id:string) {
-
-    const product = this.product.find(product => product.id === id);
-    console.log(product)
-    const modal = await this.modalCtrl.create({
-      component: ModalProductDetailsComponent,
-      componentProps: {
-        'product': product
-      }
-    });
-
-    return await modal.present();
+editProduct(id:string) {
+  this.router.navigateByUrl(`/tabs/details/${id}`);
   }
 
 }

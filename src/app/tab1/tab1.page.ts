@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { FormControl, FormControlDirective,FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FirebaseService } from './../services/firebase.service';
 
 import { Product } from './../model/product';
 import { ProductService } from './../services/product.service';
+import { CorreiosService } from './../services/correios.service';
+import { Endereco } from '../model/endereco';
 
 @Component({
   selector: 'app-tab1',
@@ -13,28 +15,37 @@ import { ProductService } from './../services/product.service';
 })
 export class Tab1Page implements OnInit {
 
-  productForm!: FormGroup;
+  ProductFormGroup!: FormGroup;
   product!:Product;
   editable:boolean = false;
+  @ViewChild('contactFormGroupDirective') contactFormGroupDirective!: FormControlDirective;
 
   constructor(
-    private formBuilder: FormBuilder,
     private productService: ProductService,
     private firebaseService: FirebaseService,
+    private correiosService: CorreiosService,
     private router: Router,
     private route: ActivatedRoute
     ) {}
 
   ngOnInit(): void {
 
-    this.productForm = this.formBuilder.group({
-      nome: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(100)]],
-      quantidade: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(5), Validators.pattern(/^[0-9]+$/)] ],
-      preco_compra: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(10), Validators.pattern(/^[0-9]+$/)]],
-      porcentagem: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(10), Validators.pattern(/^[0-9]+$/)]],
-      preco_venda: ['', []],
-      fornecedor: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(100)]]
-    });
+    this.ProductFormGroup = new FormGroup({
+      'nome': new FormControl('', Validators.required),
+      'quantidade': new FormControl('', Validators.required),
+      'valorCompra': new FormControl('', Validators.required),
+      'porcentagem': new FormControl('', Validators.required),
+      'valorVenda': new FormControl('', Validators.required),
+      'fornecedor': new FormControl('', Validators.required),
+      'razaoSocial': new FormControl('', Validators.required),
+      'cnpj': new FormControl('', Validators.required),
+      'telefone': new FormControl('', Validators.required),
+      'endereco': new FormControl('', Validators.required),
+      'cep': new FormControl('', Validators.required),
+      'logradouro': new FormControl('', Validators.required),
+      'bairro': new FormControl('', Validators.required),
+      'localidade': new FormControl('', Validators.required),
+      });
 
     this.route.paramMap.subscribe(params => {
       const productId = +params.get('id')!;
@@ -52,52 +63,54 @@ export class Tab1Page implements OnInit {
     });
 }
 
-  addProduct(values: any) {
+  createProduct(values: any) {
     let newProduct:Product = {...values};
     this.firebaseService.save(newProduct);
-    console.log(newProduct);
-    this.productForm.reset();
+    this.contactFormGroupDirective.reset();
 
   }
 
   loadForm() {
-    this.productForm.patchValue({
+    this.ProductFormGroup.patchValue({
       nome: this.product.nome,
       quantidade: this.product.quantidade,
-      preco_compra: this.product.preco_compra,
+      preco_compra: this.product.valorCompra,
       porcentagem: this.product.porcentagem,
-      preco_venda: this.product.preco_venda,
-      fornecedor: this.product.fornecedor
+      preco_venda: this.product.valorVenda,
+      fornecedor: this.product.fornecedor,
+      razaoSocial: this.product.razaoSocial,
+      cnpj: this.product.cnpj,
+      telefone: this.product.telefone,
+      cep: this.product.cep,
+      logradouro: this.product.logradouro,
+      bairro: this.product.bairro,
+      localidade: this.product.localidade,
     });
   }
-  editProduct() {
-    const editProduct = this.productForm.getRawValue() as Product;
-    editProduct.id = this.product.id;
-
-
-    this.productService.updateProduct(editProduct).subscribe({
-      next: () => {
-        this.router.navigateByUrl('/tabs/tab2');
-        this.productForm.reset();
-      },
+  loadEndereco(){
+    const cep:string = this.ProductFormGroup.get('cep')?.value;
+    this.correiosService.getEndereco(cep).subscribe({
+      next: (result:Endereco) => {
+        this.ProductFormGroup.patchValue({
+          cep: result.cep,
+          logradouro: result.logradouro,
+          bairro: result.bairro,
+          localidade: result.localidade,
+      });
+    },
       error: (err) => {
-        console.error(err);
-        this.productForm.reset();
+        console.error(err)
       }
     });
-    this.productForm.reset();
-    this.router.navigateByUrl('/tabs/tab2');
   }
-
-
   calcVenda() {
-    let valorCompra = this.productForm.get('preco_compra')?.value;
-    let porcentagem = this.productForm.get('porcentagem')?.value;
+    let valorCompra = this.ProductFormGroup.get('valorCompra')?.value;
+    let porcentagem = this.ProductFormGroup.get('porcentagem')?.value;
 
     let calcVenda = valorCompra + (valorCompra * (porcentagem / 100));
 
-    this.productForm.patchValue({
-      preco_venda : calcVenda
+    this.ProductFormGroup.patchValue({
+      valorVenda : calcVenda
     })
 
   }

@@ -1,93 +1,12 @@
-ion-grid {
-  --ion-grid-column-padding: 10px;
-  border-collapse: collapse;
-  border-style: hidden;
-}
-
-ion-row:first-child {
-  background-color: blueviolet;
-  font-weight: bold;
-  font-size: medium;
-  margin: auto;
-  border: none;
-}
-
-ion-col {
-  border: 1px solid blueviolet;
-  border-bottom: 0;
-  border-right: 0;
-  border-left: none;
-}
-
-ion-col:last-child {
-  border-right: none;
-}
-
-ion-col:first-child {
-  border-left: none;
-
-}
-
-ion-row:last-child {
-  border-bottom: 1px solid blueviolet;
-
-}
-ion-col#details{
-  text-align: center;
-
-}
-.btn-modal {
-  display: block;
-  color: red;
-  width: max-content;
-  height: max-content;
-
-}
-.btn-modal:hover {
-  cursor: pointer;
-}
-
-@media screen and (max-width: 575px) {
-  .hidden-xs-col {
-    display: none;
-  }
-  .show-xs-col {
-    display: block;
+#right {
+  ion-button{
+    float: right;
+    align-items: center;
+    justify-content: end;
+    margin-top: 12px;
   }
 }
 
-@media screen and (min-width: 576px) and (max-width: 767px) {
-  .hidden-sm-col {
-    display: none;
-  }
-  .show-sm-col {
-    display: block;
-  }
-}
-
-@media screen and (min-width: 768px) and (max-width: 991px) {
-  .hidden-md-col {
-    display: none;
-  }
-  .show-md-col {
-    display: block;
-  }
-}
-
-@media screen and (min-width: 992px) and (max-width: 1199px) {
-  .hidden-lg-col {
-    display: none;
-  }
-  .show-lg-col {
-    display: block;
-  }
-}
-
-@media screen and (min-width: 1200px)  {
-  .hidden-xl-col {
-    display: none;
-  }
-  .show-xl-col {
-    display: block;
-  }
+.produto{
+  margin-top: 20px;
 }

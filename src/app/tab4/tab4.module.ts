@@ -1,15 +1,17 @@
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
 import { Tab4PageRoutingModule } from './tab4-routing.module';
-
 import { Tab4Page } from './tab4.page';
-import { ModalFornecedorDetailsModule } from '../modal-fornecedor-details/modal-fornecedor-details.module';
-import { FornecedorService } from '../services/fornecedor.service';
+import { FirebaseService } from '../services/firebase.service';
+import { ProductService } from '../services/product.service';
+import { CorreiosService } from '../services/correios.service';
+
+
 
 @NgModule({
   imports: [
@@ -18,10 +20,9 @@ import { FornecedorService } from '../services/fornecedor.service';
     IonicModule,
     Tab4PageRoutingModule,
     HttpClientModule,
-    ModalFornecedorDetailsModule
-
+    ReactiveFormsModule
   ],
   declarations: [Tab4Page],
-  providers: [FornecedorService]
+  providers: [FirebaseService, ProductService, CorreiosService]
 })
 export class Tab4PageModule {}
