@@ -17,6 +17,7 @@ export class Tab1Page implements OnInit {
 
   ProductFormGroup!: FormGroup;
   product!:Product;
+  cep!:Endereco;
   editable:boolean = false;
   @ViewChild('contactFormGroupDirective') contactFormGroupDirective!: FormControlDirective;
 

@@ -30,19 +30,16 @@
             <ion-label position="stacked">Preço de Compra:</ion-label>
             <ion-input
               formControlName="valorCompra"
-              inputmode="number"
-              clearInput="true"
+              type="number"
               required
             ></ion-input>
           </ion-item>
 
       <ion-item>
-            <ion-label for="" position="stacked">Porcentagem:</ion-label>
+            <ion-label position="stacked">Porcentagem:</ion-label>
             <ion-input
-              inputmode="number"
-              clearInput="true"
+              type="number"
               formControlName="porcentagem"
-              (change)="calcVenda()"
               required
             ></ion-input>
           </ion-item>
@@ -51,10 +48,7 @@
             <ion-label position="stacked">Preço de Venda:</ion-label>
             <ion-input
               formControlName="valorVenda"
-              inputmode="number"
-              clearInput="true"
-              required
-            ></ion-input>
+              [value]="calcVenda()" hiddeen></ion-input>
           </ion-item>
 
           <ion-item>
